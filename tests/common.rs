@@ -106,9 +106,9 @@ pub fn contexts_without_default() -> Vec<ctx::Context> {
 pub fn configs() -> Rc<Configs> {
     Rc::new(Configs {
         auth_commands: hashmap! {
-           "foo".to_string() => "echo auth".to_string(),
-              "bar".to_string() => "exit 1".to_string(),
-              Configs::DEFAULT_AUTH_COMMAND_KEY.to_string() => "echo default auth".to_string(),
+            "foo".to_string() => "echo auth".to_string(),
+            "bar".to_string() => "exit 1".to_string(),
+            Configs::DEFAULT_AUTH_COMMAND_KEY.to_string() => "echo default auth".to_string(),
         },
     })
 }
@@ -117,8 +117,8 @@ pub fn configs() -> Rc<Configs> {
 pub fn configs_without_default() -> Rc<Configs> {
     Rc::new(Configs {
         auth_commands: hashmap! {
-           "foo".to_string() => "echo auth".to_string(),
-              "bar".to_string() => "exit 1".to_string(),
+            "foo".to_string() => "echo auth".to_string(),
+            "bar".to_string() => "exit 1".to_string(),
         },
     })
 }

@@ -306,8 +306,8 @@ aws_session_token=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
     pub fn credentials() -> Credentials {
         Credentials {
             data: hashmap! {
-                    "foo".to_string() => foo_profile_items(),
-                    "bar".to_string() => bar_profile_items(),
+                "foo".to_string() => foo_profile_items(),
+                "bar".to_string() => bar_profile_items(),
             },
             default_profile_name: Some("foo".to_string()),
         }
@@ -317,8 +317,8 @@ aws_session_token=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
     pub fn credentials_without_default() -> Credentials {
         Credentials {
             data: hashmap! {
-                    "foo".to_string() => foo_profile_items(),
-                    "bar".to_string() => bar_profile_items(),
+                "foo".to_string() => foo_profile_items(),
+                "bar".to_string() => bar_profile_items(),
             },
             default_profile_name: None,
         }
@@ -377,7 +377,7 @@ aws_session_token=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
         Ok(Profile {
             name: "foo".to_string(),
             default: true,
-items: foo_profile_items(),
+            items: foo_profile_items(),
         })
     )]
     #[case(
@@ -425,7 +425,7 @@ items: foo_profile_items(),
         Ok(Profile {
             name: "foo".to_string(),
             default: true,
-items: foo_profile_items(),
+            items: foo_profile_items(),
         })
     )]
     #[case(credentials_without_default(), Err(ctx::CTXError::NoActiveContext { source: None }))]
@@ -457,7 +457,7 @@ items: foo_profile_items(),
         Ok(Profile {
             name: "foo".to_string(),
             default: true,
-items: foo_profile_items(),
+            items: foo_profile_items(),
         })
     )]
     #[case(
