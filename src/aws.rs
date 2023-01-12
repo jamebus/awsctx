@@ -44,7 +44,7 @@ impl<P: AsRef<Path>> ctx::CTX for AWS<'_, P> {
             .configs
             .auth_commands
             .get(profile)
-            // fallback to default configuration if a commend for the profile is not found
+            // fallback to default configuration if a command for the profile is not found
             .or_else(|| {
                 self.configs
                     .auth_commands
