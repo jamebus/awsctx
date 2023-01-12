@@ -31,3 +31,11 @@ thiserror = "1.0.31"
 [dev-dependencies]
 rstest = "0.15.0"
 tempfile = "3.3.0"
+
+# https://github.com/johnthagen/min-sized-rust
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
