@@ -213,10 +213,7 @@ fn find_default_from_parsed_aws_credentials(
 ) -> Option<String> {
     let default_items = data.get(DEFAULT_PROFILE_NAME)?;
     for (name, item) in data {
-        if name == DEFAULT_PROFILE_NAME {
-            continue;
-        }
-        if item == default_items {
+        if name != DEFAULT_PROFILE_NAME && item == default_items {
             return Some(name.into());
         }
     }
