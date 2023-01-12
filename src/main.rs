@@ -89,9 +89,9 @@ fn main() {
     )
     .unwrap();
 
-    let configs = Rc::new(fatal_ctxerr(
-        Configs::initialize_default_configs::<PathBuf>(None),
-    ));
+    let configs = Rc::new(fatal_ctxerr(Configs::initialize_default_configs::<
+        PathBuf,
+    >(None)));
     let aws = AWS::new(Rc::clone(&configs), CREDENTIALS_PATH.clone()).unwrap();
     let opts = cli.opts.unwrap_or(Opts::UseContextByInteractiveFinder {});
     let skim_options = SkimOptionsBuilder::default()
@@ -122,7 +122,9 @@ fn main() {
         }
         Opts::UseContextByInteractiveFinder {} => {
             match aws.use_context_interactive(skim_options) {
-                Ok(context) => sl::info!("<green>switch to profile ({})</>", context.name),
+                Ok(context) => {
+                    sl::info!("<green>switch to profile ({})</>", context.name)
+                }
                 Err(err) => match err {
                     CTXError::NoContextIsSelected { source: _ } => (),
                     _ => fatal_ctxerr(Err(err)),

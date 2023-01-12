@@ -39,7 +39,8 @@ fn test_aws_auth(
     input: &str,
     expect: Result<ctx::Context, ctx::CTXError>,
 ) {
-    let aws: &dyn ctx::CTX = &AWS::new(configs, aws_credentials.path()).unwrap();
+    let aws: &dyn ctx::CTX =
+        &AWS::new(configs, aws_credentials.path()).unwrap();
     let actual = aws.auth(input);
     match (&expect, &actual) {
         (Ok(expect), Ok(actual)) => {
@@ -91,7 +92,8 @@ fn test_aws_list_contexts(
     aws_credentials: NamedTempFile,
     expect: Vec<ctx::Context>,
 ) {
-    let aws: &dyn ctx::CTX = &AWS::new(configs, aws_credentials.path()).unwrap();
+    let aws: &dyn ctx::CTX =
+        &AWS::new(configs, aws_credentials.path()).unwrap();
     let actual = aws.list_contexts().unwrap();
     assert_eq!(expect, actual);
 }
@@ -110,7 +112,8 @@ fn test_aws_get_active_context(
     aws_credentials: NamedTempFile,
     expect: Result<ctx::Context, ctx::CTXError>,
 ) {
-    let aws: &dyn ctx::CTX = &AWS::new(configs, aws_credentials.path()).unwrap();
+    let aws: &dyn ctx::CTX =
+        &AWS::new(configs, aws_credentials.path()).unwrap();
     let actual = aws.get_active_context();
     match (expect, actual) {
         (Ok(expect), Ok(actual)) => {
@@ -142,7 +145,8 @@ fn test_aws_use_context(
     input: &str,
     expect: Result<ctx::Context, ctx::CTXError>,
 ) {
-    let aws: &dyn ctx::CTX = &AWS::new(configs, aws_credentials.path()).unwrap();
+    let aws: &dyn ctx::CTX =
+        &AWS::new(configs, aws_credentials.path()).unwrap();
     let actual = aws.use_context(input);
     match (expect, actual) {
         (Ok(expect), Ok(actual)) => {

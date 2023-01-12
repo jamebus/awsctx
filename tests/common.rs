@@ -64,7 +64,9 @@ pub fn credentials(aws_credentials: NamedTempFile) -> Credentials {
 }
 
 #[fixture(aws_credentials = aws_credentials(aws_credentials_text_without_default()))]
-pub fn credentials_without_default(aws_credentials: NamedTempFile) -> Credentials {
+pub fn credentials_without_default(
+    aws_credentials: NamedTempFile,
+) -> Credentials {
     Credentials::load_credentials(aws_credentials.path()).unwrap()
 }
 

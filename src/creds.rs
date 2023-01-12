@@ -76,11 +76,14 @@ impl fmt::Display for Credentials {
 }
 
 impl Credentials {
-    pub fn load_credentials<P: AsRef<Path>>(credentials_path: P) -> Result<Self, ctx::CTXError> {
-        let file =
-            fs::File::open(credentials_path).map_err(|e| ctx::CTXError::CannotReadCredentials {
+    pub fn load_credentials<P: AsRef<Path>>(
+        credentials_path: P,
+    ) -> Result<Self, ctx::CTXError> {
+        let file = fs::File::open(credentials_path).map_err(|e| {
+            ctx::CTXError::CannotReadCredentials {
                 source: Some(e.into()),
-            })?;
+            }
+        })?;
 
         let mut data = parse_aws_credentials(&file)?;
         let ck = find_default_from_parsed_aws_credentials(&data);
@@ -101,10 +104,14 @@ impl Credentials {
     }
 
     pub fn get_profile(&self, name: &str) -> Result<Profile, ctx::CTXError> {
-        let items = self.data.get(name).ok_or(ctx::CTXError::NoSuchProfile {
-            profile: name.to_string(),
-            source: Some(anyhow!(format!("unknown context name: {}", name))),
-        })?;
+        let items =
+            self.data.get(name).ok_or(ctx::CTXError::NoSuchProfile {
+                profile: name.to_string(),
+                source: Some(anyhow!(format!(
+                    "unknown context name: {}",
+                    name
+                ))),
+            })?;
         Ok(Profile {
             name: name.into(),
             items: items.clone(),
@@ -120,11 +127,18 @@ impl Credentials {
         self.get_profile(name)
     }
 
-    pub fn set_default_profile(&mut self, name: &str) -> Result<Profile, ctx::CTXError> {
-        let items = self.data.get(name).ok_or(ctx::CTXError::NoSuchProfile {
-            profile: name.to_string(),
-            source: Some(anyhow!(format!("unknown context name: {}", name))),
-        })?;
+    pub fn set_default_profile(
+        &mut self,
+        name: &str,
+    ) -> Result<Profile, ctx::CTXError> {
+        let items =
+            self.data.get(name).ok_or(ctx::CTXError::NoSuchProfile {
+                profile: name.to_string(),
+                source: Some(anyhow!(format!(
+                    "unknown context name: {}",
+                    name
+                ))),
+            })?;
         self.default_profile_name = Some(name.to_string());
         Ok(Profile {
             name: name.into(),
@@ -172,11 +186,11 @@ impl Credentials {
 fn parse_aws_credentials(file: &File) -> Result<CredentialData, ctx::CTXError> {
     let mut buf_reader = BufReader::new(file);
     let mut contents = String::new();
-    buf_reader
-        .read_to_string(&mut contents)
-        .map_err(|e| ctx::CTXError::CannotReadCredentials {
+    buf_reader.read_to_string(&mut contents).map_err(|e| {
+        ctx::CTXError::CannotReadCredentials {
             source: Some(e.into()),
-        })?;
+        }
+    })?;
     let c = config::Config::builder()
         .add_source(config::File::from_str(
             contents.as_str(),
@@ -194,7 +208,9 @@ fn parse_aws_credentials(file: &File) -> Result<CredentialData, ctx::CTXError> {
         )
 }
 
-fn find_default_from_parsed_aws_credentials(data: &CredentialData) -> Option<String> {
+fn find_default_from_parsed_aws_credentials(
+    data: &CredentialData,
+) -> Option<String> {
     let default_items = data.get(DEFAULT_PROFILE_NAME)?;
     for (name, item) in data {
         if name == DEFAULT_PROFILE_NAME {
@@ -262,7 +278,9 @@ aws_session_token=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
     }
 
     #[fixture(aws_credentials = aws_credentials(aws_credentials_text()))]
-    pub fn parsed_aws_credentials(aws_credentials: NamedTempFile) -> CredentialData {
+    pub fn parsed_aws_credentials(
+        aws_credentials: NamedTempFile,
+    ) -> CredentialData {
         parse_aws_credentials(aws_credentials.as_file()).unwrap()
     }
 
@@ -323,14 +341,17 @@ aws_session_token=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
         Some("foo".to_string())
     )]
     #[case(
-        parsed_aws_credentials(aws_credentials(aws_credentials_text_without_default())),
+        parsed_aws_credentials(aws_credentials(
+            aws_credentials_text_without_default()
+        )),
         None
     )]
     fn test_find_default_from_parsed_aws_credentials(
         #[case] parsed_aws_credentials: CredentialData,
         #[case] expect: Option<String>,
     ) {
-        let actual = find_default_from_parsed_aws_credentials(&parsed_aws_credentials);
+        let actual =
+            find_default_from_parsed_aws_credentials(&parsed_aws_credentials);
         assert_eq!(expect, actual);
     }
 
@@ -345,7 +366,8 @@ aws_session_token=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
         #[case] aws_credentials: NamedTempFile,
         #[case] expect: Credentials,
     ) {
-        let actual = Credentials::load_credentials(aws_credentials.path()).unwrap();
+        let actual =
+            Credentials::load_credentials(aws_credentials.path()).unwrap();
         assert_eq!(expect, actual);
     }
 
@@ -460,7 +482,10 @@ items: foo_profile_items(),
             (Ok(expect), Ok(actual)) => {
                 assert_eq!(expect, actual);
                 // check default profile is updated
-                assert_eq!(Some(name.to_string()), credentials.default_profile_name);
+                assert_eq!(
+                    Some(name.to_string()),
+                    credentials.default_profile_name
+                );
             }
             (Err(expect), Err(actual)) => match (&expect, &actual) {
                 (
@@ -483,7 +508,10 @@ items: foo_profile_items(),
 
     #[rstest(::trace)]
     #[case(credentials(), aws_credentials_text())]
-    #[case(credentials_without_default(), aws_credentials_text_without_default())]
+    #[case(
+        credentials_without_default(),
+        aws_credentials_text_without_default()
+    )]
     fn test_credentials_dump_credentials(
         #[case] credentials: Credentials,
         #[case] aws_credentials_text: String,

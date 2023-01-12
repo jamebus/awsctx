@@ -58,7 +58,10 @@ impl<P: AsRef<Path>> ctx::CTX for AWS<'_, P> {
             .reg
             .render_template(script_template, &json!({ "profile": profile }))
             .map_err(|e| ctx::CTXError::InvalidConfigurations {
-                message: format!("failed to render script of profile {}", profile),
+                message: format!(
+                    "failed to render script of profile {}",
+                    profile
+                ),
                 source: Some(anyhow!("failed to render script {}", e)),
             })?;
 
@@ -119,13 +122,16 @@ impl<P: AsRef<Path>> ctx::CTX for AWS<'_, P> {
         &self,
         skim_options: SkimOptions,
     ) -> Result<ctx::Context, ctx::CTXError> {
-        let (tx_item, rx_item): (SkimItemSender, SkimItemReceiver) = unbounded();
+        let (tx_item, rx_item): (SkimItemSender, SkimItemReceiver) =
+            unbounded();
         // skim shows reverse order
         for context in self.list_contexts()?.into_iter().rev() {
             tx_item
                 .send(Arc::new(context))
                 .context("failed to send an item to skim")
-                .map_err(|e| ctx::CTXError::UnexpectedError { source: Some(e) })?;
+                .map_err(|e| ctx::CTXError::UnexpectedError {
+                    source: Some(e),
+                })?;
         }
         drop(tx_item);
 

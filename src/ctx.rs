@@ -7,7 +7,10 @@ pub trait CTX {
     fn list_contexts(&self) -> Result<Vec<Context>, CTXError>;
     fn get_active_context(&self) -> Result<Context, CTXError>;
     fn use_context(&self, profile: &str) -> Result<Context, CTXError>;
-    fn use_context_interactive(&self, skim_options: SkimOptions) -> Result<Context, CTXError>;
+    fn use_context_interactive(
+        &self,
+        skim_options: SkimOptions,
+    ) -> Result<Context, CTXError>;
 }
 
 #[derive(Error, Debug)]

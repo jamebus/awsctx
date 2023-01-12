@@ -1,0 +1,4 @@
+max_width = 80
+# Unstable options
+# indent_style = "visual"
+# imports_indent = "visual"

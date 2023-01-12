@@ -61,7 +61,9 @@ impl Configs {
 
     pub const DEFAULT_AUTH_COMMAND_KEY: &'static str = "__default";
 
-    pub fn load_configs<P: AsRef<Path>>(path: Option<P>) -> Result<Self, ctx::CTXError> {
+    pub fn load_configs<P: AsRef<Path>>(
+        path: Option<P>,
+    ) -> Result<Self, ctx::CTXError> {
         let path = path
             .map(|p| p.as_ref().to_path_buf())
             .unwrap_or_else(|| CONFIGS_PATH.clone());
@@ -108,7 +110,10 @@ impl Configs {
                         path.to_str().unwrap()
                     ))
                 },
-                |parent| fs::create_dir_all(parent).context("failed to create config directory"),
+                |parent| {
+                    fs::create_dir_all(parent)
+                        .context("failed to create config directory")
+                },
             )
             .map_err(|e| ctx::CTXError::UnexpectedError { source: Some(e) })?;
 
@@ -187,7 +192,10 @@ mod tests {
             }
         )
     )]
-    fn test_configs_load_configs(input: NamedTempFile, expect: Result<Configs, ctx::CTXError>) {
+    fn test_configs_load_configs(
+        input: NamedTempFile,
+        expect: Result<Configs, ctx::CTXError>,
+    ) {
         let actual = Configs::load_configs(Some(input.path()));
         match (expect, actual) {
             (Ok(expect), Ok(actual)) => {
