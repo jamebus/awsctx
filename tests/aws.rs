@@ -21,13 +21,13 @@ use common::*;
         source: None
     }),
 )]
-//  baz is not defined in configs.auth_commands and default is set
+// baz is not defined in configs.auth_commands and default is set
 #[case(
     configs(),
     "baz",
     Ok(ctx::Context {name: "baz".to_string(), active: true}),
 )]
-//  baz is not defined in configs.auth_commands and default is not set
+// baz is not defined in configs.auth_commands and default is not set
 #[case(
     configs_without_default(),
     "baz",
