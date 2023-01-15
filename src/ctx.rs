@@ -3,12 +3,17 @@ use skim::SkimOptions;
 use thiserror::Error;
 
 pub trait CTX {
-    fn auth(&self, profile: &str) -> Result<Context, CTXError>;
+    fn auth(&mut self, profile: &str) -> Result<Context, CTXError>;
     fn list_contexts(&self) -> Result<Vec<Context>, CTXError>;
     fn get_active_context(&self) -> Result<Context, CTXError>;
-    fn use_context(&self, profile: &str) -> Result<Context, CTXError>;
+    fn set_default_profile(
+        &mut self,
+        profile: &str,
+    ) -> Result<Context, CTXError>;
+    fn dump_credentials(&self) -> Result<(), CTXError>;
+    fn use_context(&mut self, profile: &str) -> Result<Context, CTXError>;
     fn use_context_interactive(
-        &self,
+        &mut self,
         skim_options: SkimOptions,
     ) -> Result<Context, CTXError>;
 }

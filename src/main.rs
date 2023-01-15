@@ -92,7 +92,8 @@ fn main() {
     let configs = Rc::new(fatal_ctxerr(Configs::initialize_default_configs::<
         PathBuf,
     >(None)));
-    let aws = AWS::new(Rc::clone(&configs), CREDENTIALS_PATH.clone()).unwrap();
+    let mut aws =
+        AWS::new(Rc::clone(&configs), CREDENTIALS_PATH.clone()).unwrap();
     let opts = cli.opts.unwrap_or(Opts::UseContextByInteractiveFinder {});
     let skim_options = SkimOptionsBuilder::default()
         .height(Some("30%"))

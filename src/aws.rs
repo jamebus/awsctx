@@ -25,21 +25,24 @@ pub static CREDENTIALS_PATH: Lazy<PathBuf> = Lazy::new(|| {
 pub struct AWS<'a, P: AsRef<Path>> {
     configs: Rc<Configs>,
     credentials_path: P,
+    credentials: Credentials,
     reg: Handlebars<'a>,
 }
 
 impl<P: AsRef<Path>> AWS<'_, P> {
     pub fn new(configs: Rc<Configs>, credentials_path: P) -> Result<Self> {
+        let credentials = Credentials::load_credentials(&credentials_path)?;
         Ok(Self {
             configs,
             credentials_path,
+            credentials,
             reg: Handlebars::new(),
         })
     }
 }
 
 impl<P: AsRef<Path>> ctx::CTX for AWS<'_, P> {
-    fn auth(&self, profile: &str) -> Result<ctx::Context, ctx::CTXError> {
+    fn auth(&mut self, profile: &str) -> Result<ctx::Context, ctx::CTXError> {
         let script_template = self
             .configs
             .auth_commands
@@ -89,8 +92,8 @@ impl<P: AsRef<Path>> ctx::CTX for AWS<'_, P> {
     }
 
     fn list_contexts(&self) -> Result<Vec<ctx::Context>, ctx::CTXError> {
-        let creds = Credentials::load_credentials(&self.credentials_path)?;
-        Ok(creds
+        Ok(self
+            .credentials
             .list_profiles()
             .into_iter()
             .map(|p| ctx::Context {
@@ -101,25 +104,45 @@ impl<P: AsRef<Path>> ctx::CTX for AWS<'_, P> {
     }
 
     fn get_active_context(&self) -> Result<ctx::Context, ctx::CTXError> {
-        let creds = Credentials::load_credentials(&self.credentials_path)?;
-        creds.get_default_profile().map(|p| ctx::Context {
-            name: p.name.to_string(),
-            active: p.default,
+        self.credentials
+            .get_default_profile()
+            .map(|p| ctx::Context {
+                name: p.name.to_string(),
+                active: p.default,
+            })
+    }
+
+    fn set_default_profile(
+        &mut self,
+        name: &str,
+    ) -> Result<ctx::Context, ctx::CTXError> {
+        let creds = &mut self.credentials;
+        let creds_profile = creds.set_default_profile(name)?;
+        Ok(ctx::Context {
+            name: creds_profile.name.to_string(),
+            active: creds_profile.default,
         })
     }
 
-    fn use_context(&self, name: &str) -> Result<ctx::Context, ctx::CTXError> {
-        let mut creds = Credentials::load_credentials(&self.credentials_path)?;
-        let profile = creds.set_default_profile(name)?;
-        creds.dump_credentials(&self.credentials_path)?;
+    fn dump_credentials(&self) -> Result<(), ctx::CTXError> {
+        self.credentials.dump_credentials(&self.credentials_path)?;
+        Ok(())
+    }
+
+    fn use_context(
+        &mut self,
+        name: &str,
+    ) -> Result<ctx::Context, ctx::CTXError> {
+        let profile = self.set_default_profile(name)?;
+        self.dump_credentials()?;
         Ok(ctx::Context {
             name: profile.name.to_string(),
-            active: profile.default,
+            active: profile.active,
         })
     }
 
     fn use_context_interactive(
-        &self,
+        &mut self,
         skim_options: SkimOptions,
     ) -> Result<ctx::Context, ctx::CTXError> {
         let (tx_item, rx_item): (SkimItemSender, SkimItemReceiver) =
