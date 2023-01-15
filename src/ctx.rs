@@ -15,11 +15,11 @@ pub trait CTX {
 
 #[derive(Error, Debug)]
 pub enum CTXError {
-    #[error("Cannot read configuration")]
+    #[error("Cannot read credentials")]
     CannotReadCredentials { source: Option<anyhow::Error> },
-    #[error("Cannot write configuration")]
+    #[error("Cannot write credentials")]
     CannotWriteCredentials { source: Option<anyhow::Error> },
-    #[error("Configuration is broken")]
+    #[error("Credentials is broken")]
     CredentialsIsBroken { source: Option<anyhow::Error> },
     #[error("Invalid configurations")]
     InvalidConfigurations {
