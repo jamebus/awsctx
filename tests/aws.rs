@@ -36,11 +36,13 @@ use common::*;
 fn test_aws_auth(
     configs: Rc<Configs>,
     aws_credentials: NamedTempFile,
+    aws_config: NamedTempFile,
     input: &str,
     expect: Result<ctx::Context, ctx::CTXError>,
 ) {
     let aws: &mut dyn ctx::CTX =
-        &mut AWS::new(configs, aws_credentials.path()).unwrap();
+        &mut AWS::new(configs, aws_credentials.path(), aws_config.path())
+            .unwrap();
     let actual = aws.auth(input);
     match (&expect, &actual) {
         (Ok(expect), Ok(actual)) => {
@@ -90,10 +92,11 @@ fn test_aws_auth(
 fn test_aws_list_contexts(
     configs: Rc<Configs>,
     aws_credentials: NamedTempFile,
+    aws_config: NamedTempFile,
     expect: Vec<ctx::Context>,
 ) {
-    let aws: &mut dyn ctx::CTX =
-        &mut AWS::new(configs, aws_credentials.path()).unwrap();
+    let aws: &dyn ctx::CTX =
+        &AWS::new(configs, aws_credentials.path(), aws_config.path()).unwrap();
     let actual = aws.list_contexts().unwrap();
     assert_eq!(expect, actual);
 }
@@ -110,10 +113,11 @@ fn test_aws_list_contexts(
 fn test_aws_get_active_context(
     configs: Rc<Configs>,
     aws_credentials: NamedTempFile,
+    aws_config: NamedTempFile,
     expect: Result<ctx::Context, ctx::CTXError>,
 ) {
-    let aws: &mut dyn ctx::CTX =
-        &mut AWS::new(configs, aws_credentials.path()).unwrap();
+    let aws: &dyn ctx::CTX =
+        &AWS::new(configs, aws_credentials.path(), aws_config.path()).unwrap();
     let actual = aws.get_active_context();
     match (expect, actual) {
         (Ok(expect), Ok(actual)) => {
@@ -142,11 +146,13 @@ fn test_aws_get_active_context(
 fn test_aws_use_context(
     configs: Rc<Configs>,
     aws_credentials: NamedTempFile,
+    aws_config: NamedTempFile,
     input: &str,
     expect: Result<ctx::Context, ctx::CTXError>,
 ) {
     let aws: &mut dyn ctx::CTX =
-        &mut AWS::new(configs, aws_credentials.path()).unwrap();
+        &mut AWS::new(configs, aws_credentials.path(), aws_config.path())
+            .unwrap();
     let actual = aws.use_context(input);
     match (expect, actual) {
         (Ok(expect), Ok(actual)) => {

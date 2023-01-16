@@ -7,7 +7,7 @@ use maplit::hashmap;
 use rstest::*;
 use tempfile::NamedTempFile;
 
-use awsctx::{configs::Configs, creds::Credentials, ctx};
+use awsctx::{config::Config, configs::Configs, creds::Credentials, ctx};
 
 #[fixture]
 pub fn aws_credentials_text() -> String {
@@ -68,6 +68,59 @@ pub fn credentials_without_default(
     aws_credentials: NamedTempFile,
 ) -> Credentials {
     Credentials::load_credentials(aws_credentials.path()).unwrap()
+}
+
+#[fixture]
+pub fn aws_config_text() -> String {
+    r#"[baz]
+region=ZZZZZZZZZZZ
+output=ZZZZZZZZZZZ
+
+[bar]
+region=YYYYYYYYYYY
+output=YYYYYYYYYYY
+
+[foo]
+region=XXXXXXXXXXX
+output=XXXXXXXXXXX
+
+[default]
+region=XXXXXXXXXXX
+output=XXXXXXXXXXX
+"#
+    .to_string()
+}
+
+#[fixture]
+pub fn aws_config_text_without_default() -> String {
+    r#"[bar]
+region=YYYYYYYYYYY
+output=YYYYYYYYYYY
+
+[foo]
+region=XXXXXXXXXXX
+output=XXXXXXXXXXX
+"#
+    .to_string()
+}
+
+#[fixture(text = aws_config_text())]
+pub fn aws_config(text: String) -> NamedTempFile {
+    let mut f = NamedTempFile::new().unwrap();
+    write!(f, "{}", text).unwrap();
+    f.flush().unwrap();
+    f.seek(SeekFrom::Start(0)).unwrap();
+    f
+}
+
+#[fixture]
+pub fn config(aws_config: NamedTempFile) -> Config {
+    Config::load_config(aws_config.path()).unwrap()
+}
+
+#[fixture(aws_config = aws_config(aws_config_text_without_default()))]
+pub fn config_without_default(aws_config: NamedTempFile) -> Config {
+    Config::load_config(aws_config.path()).unwrap()
 }
 
 #[fixture]

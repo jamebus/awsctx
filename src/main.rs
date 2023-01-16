@@ -1,7 +1,7 @@
 use std::{io, path::PathBuf, rc::Rc};
 
 use awsctx::{
-    aws::{AWS, CREDENTIALS_PATH},
+    aws::{AWS, CONFIG_PATH, CREDENTIALS_PATH},
     configs::Configs,
     ctx::{CTXError, CTX},
     view::{fatal_ctxerr, show_context, show_contexts},
@@ -92,8 +92,12 @@ fn main() {
     let configs = Rc::new(fatal_ctxerr(Configs::initialize_default_configs::<
         PathBuf,
     >(None)));
-    let mut aws =
-        AWS::new(Rc::clone(&configs), CREDENTIALS_PATH.clone()).unwrap();
+    let mut aws = AWS::new(
+        Rc::clone(&configs),
+        CREDENTIALS_PATH.clone(),
+        CONFIG_PATH.clone(),
+    )
+    .unwrap();
     let opts = cli.opts.unwrap_or(Opts::UseContextByInteractiveFinder {});
     let skim_options = SkimOptionsBuilder::default()
         .height(Some("30%"))

@@ -11,6 +11,7 @@ pub trait CTX {
         profile: &str,
     ) -> Result<Context, CTXError>;
     fn dump_credentials(&self) -> Result<(), CTXError>;
+    fn dump_config(&self) -> Result<(), CTXError>;
     fn use_context(&mut self, profile: &str) -> Result<Context, CTXError>;
     fn use_context_interactive(
         &mut self,
@@ -26,6 +27,12 @@ pub enum CTXError {
     CannotWriteCredentials { source: Option<anyhow::Error> },
     #[error("Credentials is broken")]
     CredentialsIsBroken { source: Option<anyhow::Error> },
+    #[error("Cannot read config")]
+    CannotReadConfig { source: Option<anyhow::Error> },
+    #[error("Cannot write config")]
+    CannotWriteConfig { source: Option<anyhow::Error> },
+    #[error("Config is broken")]
+    ConfigIsBroken { source: Option<anyhow::Error> },
     #[error("Invalid configurations")]
     InvalidConfigurations {
         message: String,

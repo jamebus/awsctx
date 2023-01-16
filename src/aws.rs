@@ -1,3 +1,4 @@
+use crate::config::Config;
 use crate::configs::Configs;
 use crate::creds::Credentials;
 use crate::ctx;
@@ -21,8 +22,16 @@ pub static CREDENTIALS_PATH: Lazy<PathBuf> = Lazy::new(|| {
     path
 });
 
+pub static CONFIG_PATH: Lazy<PathBuf> = Lazy::new(|| {
+    let mut path = home_dir().unwrap();
+    path.push(".aws/config");
+    path
+});
+
 #[derive(Debug)]
 pub struct AWS<'a, P: AsRef<Path>> {
+    config_path: P,
+    config: Config,
     configs: Rc<Configs>,
     credentials_path: P,
     credentials: Credentials,
@@ -30,9 +39,16 @@ pub struct AWS<'a, P: AsRef<Path>> {
 }
 
 impl<P: AsRef<Path>> AWS<'_, P> {
-    pub fn new(configs: Rc<Configs>, credentials_path: P) -> Result<Self> {
+    pub fn new(
+        configs: Rc<Configs>,
+        credentials_path: P,
+        config_path: P,
+    ) -> Result<Self> {
         let credentials = Credentials::load_credentials(&credentials_path)?;
+        let config = Config::load_config(&config_path)?;
         Ok(Self {
+            config_path,
+            config,
             configs,
             credentials_path,
             credentials,
@@ -117,7 +133,9 @@ impl<P: AsRef<Path>> ctx::CTX for AWS<'_, P> {
         name: &str,
     ) -> Result<ctx::Context, ctx::CTXError> {
         let creds = &mut self.credentials;
+        let config = &mut self.config;
         let creds_profile = creds.set_default_profile(name)?;
+        config.set_default_profile(name)?;
         Ok(ctx::Context {
             name: creds_profile.name.to_string(),
             active: creds_profile.default,
@@ -129,12 +147,18 @@ impl<P: AsRef<Path>> ctx::CTX for AWS<'_, P> {
         Ok(())
     }
 
+    fn dump_config(&self) -> Result<(), ctx::CTXError> {
+        self.config.dump_config(&self.config_path)?;
+        Ok(())
+    }
+
     fn use_context(
         &mut self,
         name: &str,
     ) -> Result<ctx::Context, ctx::CTXError> {
         let profile = self.set_default_profile(name)?;
         self.dump_credentials()?;
+        self.dump_config()?;
         Ok(ctx::Context {
             name: profile.name.to_string(),
             active: profile.active,

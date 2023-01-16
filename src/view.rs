@@ -25,6 +25,27 @@ pub fn fatal_ctxerr<T>(result: Result<T, ctx::CTXError>) -> T {
                 }
                 std::process::exit(1);
             }
+            ctx::CTXError::CannotReadConfig { source } => {
+                error!("<red>failed to read config, check your ~/.aws/config file</>");
+                if let Some(source) = source {
+                    debug!("caused error: {:?}", source);
+                }
+                std::process::exit(1);
+            }
+            ctx::CTXError::CannotWriteConfig { source } => {
+                error!("<red>failed to write config to ~/.aws/config file</>");
+                if let Some(source) = source {
+                    debug!("caused error: {:?}", source);
+                }
+                std::process::exit(1);
+            }
+            ctx::CTXError::ConfigIsBroken { source } => {
+                error!("<red>broken config, check your ~/.aws/config file</>");
+                if let Some(source) = source {
+                    debug!("caused error: {:?}", source);
+                }
+                std::process::exit(1);
+            }
             ctx::CTXError::InvalidConfigurations { message, source } => {
                 error!("<red>invalid configurations: {}</>", message);
                 error!("");
