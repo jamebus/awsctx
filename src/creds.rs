@@ -222,7 +222,7 @@ fn find_default_from_parsed_aws_credentials(
 
 #[cfg(test)]
 mod tests {
-    use std::io::{Seek, SeekFrom};
+    use std::io::Seek;
 
     use maplit::hashmap;
     use rstest::*;
@@ -270,7 +270,7 @@ aws_session_token=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
         let mut f = NamedTempFile::new().unwrap();
         write!(f, "{}", text).unwrap();
         f.flush().unwrap();
-        f.seek(SeekFrom::Start(0)).unwrap();
+        f.rewind().unwrap();
         f
     }
 

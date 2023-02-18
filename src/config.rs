@@ -231,7 +231,7 @@ fn find_default_from_parsed_aws_config(data: &ConfigData) -> Option<String> {
 
 #[cfg(test)]
 mod tests {
-    use std::io::{Seek, SeekFrom};
+    use std::io::Seek;
 
     use maplit::hashmap;
     use rstest::*;
@@ -274,7 +274,7 @@ region=XXXXXXXXXXX
         let mut f = NamedTempFile::new().unwrap();
         write!(f, "{}", text).unwrap();
         f.flush().unwrap();
-        f.seek(SeekFrom::Start(0)).unwrap();
+        f.rewind().unwrap();
         f
     }
 

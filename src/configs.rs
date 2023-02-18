@@ -139,7 +139,7 @@ impl Configs {
 
 #[cfg(test)]
 mod tests {
-    use std::io::{Seek, SeekFrom};
+    use std::io::Seek;
 
     use rstest::*;
     use tempfile::{NamedTempFile, TempDir};
@@ -159,7 +159,7 @@ mod tests {
         let mut f = NamedTempFile::new().unwrap();
         write!(f, "{}", configs_text).unwrap();
         f.flush().unwrap();
-        f.seek(SeekFrom::Start(0)).unwrap();
+        f.rewind().unwrap();
         f
     }
 

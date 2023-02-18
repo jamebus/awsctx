@@ -1,7 +1,5 @@
-use std::{
-    io::{Seek, SeekFrom, Write},
-    rc::Rc,
-};
+use std::rc::Rc;
+use std::io::{Seek, Write};
 
 use maplit::hashmap;
 use rstest::*;
@@ -54,7 +52,7 @@ pub fn aws_credentials(text: String) -> NamedTempFile {
     let mut f = NamedTempFile::new().unwrap();
     write!(f, "{}", text).unwrap();
     f.flush().unwrap();
-    f.seek(SeekFrom::Start(0)).unwrap();
+    f.rewind().unwrap();
     f
 }
 
@@ -109,7 +107,7 @@ pub fn aws_config(text: String) -> NamedTempFile {
     let mut f = NamedTempFile::new().unwrap();
     write!(f, "{}", text).unwrap();
     f.flush().unwrap();
-    f.seek(SeekFrom::Start(0)).unwrap();
+    f.rewind().unwrap();
     f
 }
 
