@@ -17,16 +17,18 @@
 	// "postCreateCommand": ["rustc", "--version"],
 
 	// Configure tool-specific properties.
-	// "customizations": {},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"redhat.vscode-yaml"
+			],
+
+			"settings": {
+				"yaml.schemaStore.enable": false
+			}
+		}
+	}
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
-
-	"extensions": [
-		"redhat.vscode-yaml"
-	],
-
-	"settings": {
-		"yaml.schemaStore.enable": false
-	}
 }
